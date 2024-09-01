@@ -1,6 +1,5 @@
 import {readFileSync} from 'node:fs';
-import * as assert from 'node:assert';
-import {compile, render} from 'ejs';
+import {render} from 'ejs';
 
 const tpl = readFileSync('./template.ejs', 'utf8');
 const mustMatch = Object.fromEntries(
@@ -9,7 +8,7 @@ const mustMatch = Object.fromEntries(
     .map(key => [key, true])
 );
 
-function mergeVerifiers(sources) {
+export function mergeVerifiers(sources, offset) {
   // Extract the constant values from the Solidity code
   const constants = sources.map(sourceCode =>
     Array.from(sourceCode.matchAll(
@@ -21,8 +20,10 @@ function mergeVerifiers(sources) {
   );
 
   // Build the new file
-  const data = formatConstants(constants);
-  console.log(data);
+  const data = {
+    ...formatConstants(constants),
+    offset,
+  };
   return render(tpl, data);
 }
 
@@ -56,10 +57,7 @@ function formatConstants(arr) {
     data.verifiers.push(thesePoints);
   }
 
+  data.ICLen = (data.verifiers[0].length - 4) / 2;
+
   return data;
 }
-
-console.log(mergeVerifiers([
-  readFileSync('./test/contracts/MultiTest5.sol', 'utf8'),
-  readFileSync('./test/contracts/MultiTest6.sol', 'utf8'),
-]));

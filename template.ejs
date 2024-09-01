@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Part of this file was generated with [snarkJS](https://github.com/iden3/snarkjs).
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.23;
 
-uint8 constant MAX_DEPTH = <%= verifiers.length %>;
-
-contract SemaphoreVerifier {
+contract Groth16MultiVerifier {
     // Scalar field size
     uint256 constant r = <%= r %>;
     // Base field size
@@ -24,9 +22,7 @@ contract SemaphoreVerifier {
     uint256 constant gammay2 = <%= gammay2 %>;
 
     // Verification Key points.
-    // These values are taken from the verification key json file generated with snarkjs.
-    // It allows to use the same verifier to verify proofs for all the tree depths supported by Semaphore.
-    uint256[<%= verifiers[0].length %>][MAX_DEPTH] VK_POINTS = [
+    uint256[<%= verifiers[0].length %>][<%= verifiers.length %>] VK_POINTS = [
       <% for (let i=0; i<verifiers.length; i++) { %>[
 <% for (let j=0; j<verifiers[0].length; j++) { %>        <%= verifiers[i][j] + (j === verifiers[0].length - 1 ? '' : ',\n') %><% } %>
       ]<%= (i === verifiers.length - 1 ? '' : ',\n      ') %><% } %>
@@ -42,10 +38,10 @@ contract SemaphoreVerifier {
         uint[2] calldata _pA,
         uint[2][2] calldata _pB,
         uint[2] calldata _pC,
-        uint[4] calldata _pubSignals,
-        uint merkleTreeDepth
+        uint[<%= ICLen - 1 %>] calldata _pubSignals,
+        uint verifierIndex
     ) external view returns (bool) {
-        uint[14] memory _vkPoints = VK_POINTS[merkleTreeDepth - 1];
+        uint[<%= verifiers[0].length %>] memory _vkPoints = VK_POINTS[verifierIndex - <%= offset %>];
 
         assembly {
             function checkField(v) {
@@ -90,28 +86,14 @@ contract SemaphoreVerifier {
 
                 // Compute the linear combination vk_x
 
-                g1_mulAccC(_pVk, mload(add(vkPoints, 192)), mload(add(vkPoints, 224)), calldataload(add(pubSignals, 0)))
-
+                <% for (let i=0; i<ICLen - 1; i++) { %>
                 g1_mulAccC(
                     _pVk,
-                    mload(add(vkPoints, 256)),
-                    mload(add(vkPoints, 288)),
-                    calldataload(add(pubSignals, 32))
+                    mload(add(vkPoints, <%= 192 + (i * 64) %>)),
+                    mload(add(vkPoints, <%= 224 + (i * 64) %>)),
+                    calldataload(add(pubSignals, <%= i * 32 %>))
                 )
-
-                g1_mulAccC(
-                    _pVk,
-                    mload(add(vkPoints, 320)),
-                    mload(add(vkPoints, 352)),
-                    calldataload(add(pubSignals, 64))
-                )
-
-                g1_mulAccC(
-                    _pVk,
-                    mload(add(vkPoints, 384)),
-                    mload(add(vkPoints, 416)),
-                    calldataload(add(pubSignals, 96))
-                )
+                <% } %>
 
                 // -A
                 mstore(_pPairing, calldataload(pA))
