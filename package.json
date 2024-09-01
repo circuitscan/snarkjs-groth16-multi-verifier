@@ -1,0 +1,13 @@
+{
+  "name": "snarkjs-groth16-multi-verifier",
+  "version": "0.0.1",
+  "description": "Combine multiple similar groth16 Solidity verifier contracts into one contract",
+  "main": "index.js",
+  "type": "module",
+  "repository": "https://github.com/circuitscan/snarkjs-groth16-multi-verifier",
+  "author": "numtel <ben@latenightsketches.com>",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.10"
+  }
+}
