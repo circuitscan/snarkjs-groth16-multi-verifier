@@ -1,6 +1,6 @@
 {
   "name": "snarkjs-groth16-multi-verifier",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Combine multiple similar groth16 Solidity verifier contracts into one contract",
   "main": "index.js",
   "type": "module",
