@@ -109,7 +109,7 @@ describe('mergeVerifiers', () => {
     ));
 
     // Generated at:
-    // https://circuitscan.org/chain/17000/address/0x08e673f966cb25275db8cf02ff9966d66005709f
+    // https://circuitscan.org/chain/17000/address/0x467d5a506f0dcfbffaa403656ed1cc1477d657eb
     assert.ok(await contract.verifyProof(
       [
         "0x1f5532801ce6e8c8dc1ff6625094aaae65c4e91ac9cc8cb474faec0e5f6fe407",
